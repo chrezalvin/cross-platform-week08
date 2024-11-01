@@ -1,20 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { routeList, RouteStackParamList } from './shared';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import pagesList from './pages';
+import { NavigationContainer } from '@react-navigation/native';
 
-export default function App() {
+
+export function App() {
+  const Stack =createNativeStackNavigator<RouteStackParamList>();
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+        flex: 1,
+      }}
+    >
+      <Stack.Navigator
+        initialRouteName={routeList.home}
+      >
+        {
+          pagesList.map((page) => 
+            <Stack.Screen
+              key={page.name} 
+              name={page.name} 
+              component={page.component}
+              options={page.headerOptions ?? {headerShown: false}} 
+            />
+          )
+        }
+      </Stack.Navigator>
     </View>
-  );
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function SafeAreaWrapper(){
+  return (
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <App />
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
+}
